@@ -35,3 +35,25 @@ def write_monthly_markdown(monthly: dict, compare_notes: list[str], path: str | 
 
     ensure_parent(path)
     Path(path).write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
+
+
+def write_overview_markdown(
+    *,
+    period_label: str,
+    total_papers: int,
+    summary_text: str,
+    mode: str,
+    path: str | Path,
+) -> None:
+    lines = [
+        f"# Overview Summary - {period_label}",
+        "",
+        f"- Total papers: **{total_papers}**",
+        f"- Summary mode: **{mode}**",
+        "",
+        "## Batch Summary",
+        summary_text.strip() if summary_text.strip() else "(empty)",
+        "",
+    ]
+    ensure_parent(path)
+    Path(path).write_text("\n".join(lines), encoding="utf-8")
