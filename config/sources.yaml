@@ -1,0 +1,14 @@
+arxiv:
+  enabled: true
+  name: arXiv cs/new
+  endpoint: "https://arxiv.org/list/cs/new"
+
+iclr:
+  enabled: true
+  name: ICLR (OpenReview)
+  endpoint: "https://openreview.net/group?id=ICLR.cc"
+
+neurips:
+  enabled: true
+  name: NeurIPS Proceedings
+  endpoint: "https://papers.nips.cc"
