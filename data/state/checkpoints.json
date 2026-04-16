@@ -1,6 +1,9 @@
 {
   "last_daily_collect_utc": "2026-04-16T04:20:31.975413+00:00",
-  "last_inserted": 0,
+  "last_inserted": 120,
   "last_monthly_report_utc": "2026-04-16T04:20:32.796913+00:00",
-  "last_report_month": "2026-04"
+  "last_report_month": "2026-04",
+  "last_weekly_collect_utc": "2026-04-16T06:00:28.116777+00:00",
+  "last_weekly_overview": "reports/weekly/2026-W16/overview.md",
+  "last_weekly_overview_json": "reports/weekly/2026-W16/overview.json"
 }
