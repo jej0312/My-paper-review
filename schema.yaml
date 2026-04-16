@@ -1,0 +1,34 @@
+main_labels:
+  - llm
+  - knowledge_graph
+  - clinical_application
+
+sub_labels:
+  llm:
+    - reasoning
+    - rag
+    - agents
+    - multimodal
+    - evaluation
+    - safety
+    - efficiency
+    - domain_adaptation
+
+  knowledge_graph:
+    - kg_construction
+    - kg_completion
+    - graph_rag
+    - graph_reasoning
+    - ontology
+    - retrieval
+    - biomedical_kg
+
+  clinical_application:
+    - ehr
+    - clinical_decision_support
+    - medical_qa
+    - radiology
+    - pathology
+    - genomics
+    - biomedical_nlp
+    - patient_safety
