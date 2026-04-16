@@ -2,13 +2,7 @@ name: weekly-collect
 
 on:
   schedule:
-<<<<<<<< HEAD:.github/workflows/weekly_collect.yml
     - cron: "0 23 * * 0"
-========
-    # 7 AM America/Chicago across DST transitions (run both, gate in-step)
-    - cron: "0 12 * * *"
-    - cron: "0 13 * * *"
->>>>>>>> e38a055 (Add daily keyword summary pipeline and 7AM CT daily schedule):.github/workflows/daily_collect.yml
   workflow_dispatch:
 
 jobs:
@@ -27,32 +21,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-<<<<<<<< HEAD:.github/workflows/weekly_collect.yml
       - name: Run weekly collectors
         env:
           OPENREVIEW_TOKEN: ${{ secrets.OPENREVIEW_TOKEN }}
         run: python -m src.main collect-weekly
-========
-      - name: Run daily collectors at 7 AM CT only
-        env:
-          OPENREVIEW_TOKEN: ${{ secrets.OPENREVIEW_TOKEN }}
-        run: |
-          CT_HOUR=$(TZ=America/Chicago date +%H)
-          if [ "$CT_HOUR" != "07" ]; then
-            echo "Skipping run; current America/Chicago hour is $CT_HOUR"
-            exit 0
-          fi
-          python -m src.main collect-daily
->>>>>>>> e38a055 (Add daily keyword summary pipeline and 7AM CT daily schedule):.github/workflows/daily_collect.yml
 
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/ reports/
-<<<<<<<< HEAD:.github/workflows/weekly_collect.yml
           git commit -m "weekly collection $(date -u +%G-W%V)" || echo "No changes"
-========
-          git commit -m "daily collection $(TZ=America/Chicago date +%F)" || echo "No changes"
->>>>>>>> e38a055 (Add daily keyword summary pipeline and 7AM CT daily schedule):.github/workflows/daily_collect.yml
           git push
