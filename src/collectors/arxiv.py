@@ -51,6 +51,7 @@ def collect_arxiv(max_results: int = 80) -> list[Paper]:
         abstract = clip_text(entry.findtext("a:summary", default="", namespaces=ns), 6000)
         link = entry.findtext("a:id", default="", namespaces=ns)
         published = entry.findtext("a:published", default="", namespaces=ns)
+        comments = clip_text(entry.findtext("arxiv:comment", default="", namespaces=ns), 500)
 
         categories = [
             el.attrib.get("term", "") for el in entry.findall("a:category", ns) if el.attrib.get("term")
@@ -60,6 +61,12 @@ def collect_arxiv(max_results: int = 80) -> list[Paper]:
             for a in entry.findall("a:author", ns)
             if a.findtext("a:name", default="", namespaces=ns)
         ]
+
+        pdf_url = ""
+        for l in entry.findall("a:link", ns):
+            if l.attrib.get("title") == "pdf" or l.attrib.get("type") == "application/pdf":
+                pdf_url = l.attrib.get("href", "")
+                break
 
         arxiv_id = ""
         m = re.search(r"arxiv\.org/abs/([^v]+)", link)
@@ -77,7 +84,7 @@ def collect_arxiv(max_results: int = 80) -> list[Paper]:
                 url=link,
                 published_at=published,
                 categories=_extract_primary_category(categories),
-                meta={"arxiv_id": arxiv_id},
+                meta={"arxiv_id": arxiv_id, "comments": comments, "pdf_url": pdf_url},
             )
         )
     return papers
