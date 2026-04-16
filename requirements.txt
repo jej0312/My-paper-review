@@ -1,0 +1,1 @@
+# Intentionally minimal; pipeline runs on Python stdlib by default.
