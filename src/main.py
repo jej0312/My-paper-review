@@ -49,6 +49,52 @@ def _collect_and_insert(max_arxiv: int) -> tuple[list[Paper], int]:
     write_json(SEEN_IDS, sorted(seen_ids.union(added_ids)))
     return new_papers, inserted
 
+def collect_daily(max_arxiv: int = 80, day: str | None = None) -> dict:
+    _, inserted = _collect_and_insert(max_arxiv=max_arxiv)
+    rows = [Paper.from_dict(r) for r in read_jsonl(PAPERS_STORE)]
+
+    target_day = day or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    day_papers = papers_in_window(rows, end_day=target_day, days=1)
+
+    summary = summarize_weekly_keyword(day_papers, period_label=f"daily:{target_day}")
+    daily_overview_json = f"{DAILY_DIR}/{target_day}/overview.json"
+    daily_overview_md = f"{DAILY_DIR}/{target_day}/overview.md"
+
+    write_json(daily_overview_json, summary)
+    md_lines = [
+        f"# Daily Overview - {target_day}",
+        "",
+        f"- Summary mode: **{summary['mode']}**",
+        f"- Total papers in day: **{summary['total_papers']}**",
+        "",
+        "## Top TF-IDF keywords",
+    ]
+    for kw in summary.get("top_keywords", []):
+        md_lines.append(f"- {kw['term']}: {kw['score']}")
+
+    md_lines.extend(["", "## Per-paper summaries (<=5 lines each)"])
+    for paper in summary.get("paper_summaries", []):
+        md_lines.append("")
+        for ln in paper["lines"]:
+            md_lines.append(f"- {ln}")
+
+    ensure_parent(daily_overview_md)
+    with open(daily_overview_md, "w", encoding="utf-8") as f:
+        f.write("\n".join(md_lines) + "\n")
+
+    checkpoints = read_json(CHECKPOINTS, default={})
+    checkpoints["last_daily_collect_utc"] = datetime.now(timezone.utc).isoformat()
+    checkpoints["last_inserted"] = inserted
+    checkpoints["last_daily_overview"] = daily_overview_md
+    checkpoints["last_daily_overview_json"] = daily_overview_json
+    write_json(CHECKPOINTS, checkpoints)
+
+    return {
+        "inserted": inserted,
+        "day": target_day,
+        "daily_overview": daily_overview_md,
+        "summary_mode": summary["mode"],
+    }
 
 
 def collect_daily(max_arxiv: int = 80, day: str | None = None) -> dict:
