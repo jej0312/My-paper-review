@@ -1,0 +1,43 @@
+name: daily-collect
+
+on:
+  schedule:
+    # 7 AM America/Chicago across DST transitions (run both, gate in-step)
+    - cron: "0 12 * * *"
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily collectors at 7 AM CT only
+        env:
+          OPENREVIEW_TOKEN: ${{ secrets.OPENREVIEW_TOKEN }}
+        run: |
+          CT_HOUR=$(TZ=America/Chicago date +%H)
+          if [ "$CT_HOUR" != "07" ]; then
+            echo "Skipping run; current America/Chicago hour is $CT_HOUR"
+            exit 0
+          fi
+          python -m src.main collect-daily
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ reports/
+          git commit -m "daily collection $(TZ=America/Chicago date +%F)" || echo "No changes"
+          git push
