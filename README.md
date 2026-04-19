@@ -29,8 +29,10 @@ python -m src.main build-monthly-report --month 2026-04
 - `.github/workflows/daily_collect.yml`
   - daily collection + keyword summary (LLM 미사용)
   - **매일 미국 중부 시간 오전 7시** 실행
+  - 별도 secret 불필요 (`OPENREVIEW_TOKEN` 미사용)
 - `.github/workflows/weekly_collect.yml`
   - weekly collection + keyword summary (LLM 미사용)
+  - 별도 secret 불필요 (`OPENREVIEW_TOKEN` 미사용)
 - `.github/workflows/monthly_report.yml`
   - monthly LLM summary + Notion publish
   - secrets: `OPENAI_API_KEY`, `NOTION_API_KEY`, `NOTION_DATABASE_ID`

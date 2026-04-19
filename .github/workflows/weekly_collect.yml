@@ -22,9 +22,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run weekly collectors at 7 AM CT only
-        env:
-          OPENREVIEW_TOKEN: ${{ secrets.OPENREVIEW_TOKEN }}
+      - name: Run weekly collectors at Sunday 8 PM CT only
         run: |
           CT_HOUR=$(TZ=America/Chicago date +%H)
           if [ "$CT_HOUR" != "07" ]; then
