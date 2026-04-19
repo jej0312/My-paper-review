@@ -24,8 +24,6 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run daily collectors at 7 AM CT only
-        env:
-          OPENREVIEW_TOKEN: ${{ secrets.OPENREVIEW_TOKEN }}
         run: |
           CT_HOUR=$(TZ=America/Chicago date +%H)
           if [ "$CT_HOUR" != "07" ]; then

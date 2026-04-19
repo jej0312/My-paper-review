@@ -2,7 +2,9 @@ name: monthly-report
 
 on:
   schedule:
-    - cron: "10 0 1 * *"
+    # Last day of month 10 PM America/Chicago across DST transitions (run both, gate in-step)
+    - cron: "0 3 * * *"
+    - cron: "0 4 * * *"
   workflow_dispatch:
 
 jobs:
@@ -21,17 +23,25 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Generate monthly report
+      - name: Generate monthly report on last day 10 PM CT only
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: python -m src.main build-monthly-report
+        run: |
+          CT_HOUR=$(TZ=America/Chicago date +%H)
+          CT_DAY=$(TZ=America/Chicago date +%d)
+          CT_LAST_DAY=$(TZ=America/Chicago date -d "$(TZ=America/Chicago date +%Y-%m-01) +1 month -1 day" +%d)
+          if [ "$CT_HOUR" != "22" ] || [ "$CT_DAY" != "$CT_LAST_DAY" ]; then
+            echo "Skipping run; current America/Chicago day/hour is $CT_DAY/$CT_HOUR (last day: $CT_LAST_DAY)"
+            exit 0
+          fi
+          python -m src.main build-monthly-report
 
       - name: Commit report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add reports/
-          git commit -m "monthly report $(date -u +%Y-%m)" || echo "No changes"
+          git commit -m "monthly report $(TZ=America/Chicago date +%Y-%m)" || echo "No changes"
           git push
