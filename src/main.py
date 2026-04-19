@@ -8,8 +8,6 @@ from src.analyze.keyword_summarizer import papers_in_window, summarize_weekly_ke
 from src.analyze.llm_summarizer import summarize_monthly_papers
 from src.classify.llm_classifier import classify_paper
 from src.collectors.arxiv import collect_arxiv
-from src.collectors.iclr_openreview import collect_iclr
-from src.collectors.neurips_proceedings import collect_neurips
 from src.normalize.schema import Paper
 from src.publish.github_writer import write_monthly_markdown
 from src.publish.notion_writer import publish_to_notion
@@ -28,10 +26,8 @@ MONTHLY_DIR = f"{REPORT_DIR}/monthly"
 def _collect_and_insert(max_arxiv: int) -> tuple[list[Paper], int]:
     seen_ids = set(read_json(SEEN_IDS, default=[]))
 
-    papers: list[Paper] = []
-    papers += collect_arxiv(max_results=max_arxiv)
-    papers += collect_iclr()
-    papers += collect_neurips()
+    # arXiv-first collection path (OpenReview/NeurIPS collectors intentionally excluded for now)
+    papers: list[Paper] = collect_arxiv(max_results=max_arxiv)
 
     new_papers: list[Paper] = []
     new_rows: list[dict] = []

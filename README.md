@@ -7,6 +7,7 @@ arXiv `cs/new` 기반으로 LLM / Knowledge Graph / Clinical Application 연구 
 - **Weekly summary:** TF-IDF/키워드 기반 (**LLM 미사용**)
 - **Monthly summary:** LLM 우선, 실패 시 fallback
 - **Notion publish:** GitHub Actions Secrets 사용 (`NOTION_API_KEY`, `NOTION_DATABASE_ID`)
+- **수집 소스:** 현재는 **arXiv 우선/단독 수집** (ICLR OpenReview/NeurIPS proceedings는 비활성)
 
 ## Commands
 
